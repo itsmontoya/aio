@@ -2,13 +2,24 @@ package aio
 
 import (
 	"os"
-	//	"github.com/missionMeteora/toolkit/errors"
+	"runtime"
 )
 
-// New returns a new AIO
-func New(numThreads int) *AIO {
+//	"github.com/missionMeteora/toolkit/errors"
+
+// New is an alias for NewNum(runtime.NumCPU())
+func New() *AIO {
+	return NewNum(runtime.NumCPU())
+}
+
+// NewNum returns a new AIO with the specific number of workers.
+func NewNum(numThreads int) *AIO {
 	a := AIO{
-		rq: make(chan interface{}, 1024),
+		rq: make(chan interface{}, ulimitNoFile()),
+	}
+
+	if numThreads < 1 {
+		numThreads = 1
 	}
 
 	for i := 0; i < numThreads; i++ {

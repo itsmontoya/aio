@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var ta = New(2)
+var ta = New()
 var testBuf = bytes.NewBuffer(nil)
 
 const (
@@ -23,7 +23,7 @@ func TestBasic(t *testing.T) {
 		oresp *OpenResp
 	)
 
-	aio := New(2)
+	aio := New()
 
 	if oresp = <-aio.Open("./testing/helloWorld.txt"); oresp.Err != nil {
 		t.Fatal(oresp.Err)
