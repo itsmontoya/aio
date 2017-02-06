@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var ta = New(2)
+var ta = New()
 var testBuf = bytes.NewBuffer(nil)
 
 const (
@@ -23,19 +23,19 @@ func TestBasic(t *testing.T) {
 		oresp *OpenResp
 	)
 
-	aio := New(2)
+	aio := New()
 
-	if oresp = <-aio.Open("./testing/helloWorld.txt"); oresp.err != nil {
-		t.Fatal(oresp.err)
+	if oresp = <-aio.Open("./testing/helloWorld.txt"); oresp.Err != nil {
+		t.Fatal(oresp.Err)
 	}
 
-	f = oresp.f
+	f = oresp.F
 
-	if oresp = <-aio.OpenFile("./testing/testWrite.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600); oresp.err != nil {
-		t.Fatal(oresp.err)
+	if oresp = <-aio.OpenFile("./testing/testWrite.txt", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600); oresp.Err != nil {
+		t.Fatal(oresp.Err)
 	}
 
-	wf = oresp.f
+	wf = oresp.F
 
 	var (
 		buf [32]byte
@@ -62,11 +62,11 @@ func TestBasic(t *testing.T) {
 	}
 
 	or := <-ta.Open(testFilePath)
-	if or.err != nil {
+	if or.Err != nil {
 		t.Fatal(err)
 	}
 
-	if _, err := io.Copy(testBuf, or.f); err != nil {
+	if _, err := io.Copy(testBuf, or.F); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -75,15 +75,15 @@ func BenchmarkAIO(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		testBuf.Reset()
 		or := <-ta.Open(testFilePath)
-		if or.err != nil {
-			b.Fatal(or.err)
+		if or.Err != nil {
+			b.Fatal(or.Err)
 		}
 
-		if _, err := io.Copy(testBuf, or.f); err != nil {
+		if _, err := io.Copy(testBuf, or.F); err != nil {
 			b.Fatal(err)
 		}
 
-		if err := or.f.Close(); err != nil {
+		if err := or.F.Close(); err != nil {
 			b.Fatal(err)
 		}
 	}
@@ -117,15 +117,15 @@ func BenchmarkAIOPara(b *testing.B) {
 		buf := bytes.NewBuffer(nil)
 		for pb.Next() {
 			or := <-ta.Open(testFilePath)
-			if or.err != nil {
-				b.Fatal(or.err)
+			if or.Err != nil {
+				b.Fatal(or.Err)
 			}
 
-			if _, err := io.Copy(buf, or.f); err != nil {
+			if _, err := io.Copy(buf, or.F); err != nil {
 				b.Fatal(err)
 			}
 
-			if err := or.f.Close(); err != nil {
+			if err := or.F.Close(); err != nil {
 				b.Fatal(err)
 			}
 

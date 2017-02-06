@@ -1,22 +1,25 @@
 package main
 
 import (
-	"github.com/itsmontoya/aio"
-	"github.com/julienschmidt/httprouter"
 	"io"
+	"log"
 	"net/http"
 	"os"
+
+	"github.com/OneOfOne/aio"
+	"github.com/julienschmidt/httprouter"
 )
 
 func main() {
 	s := &srv{
-		aio: aio.New(2),
+		aio: aio.NewNum(2),
+		// aio: aio.New(), using numCpu slows it down
 	}
 
 	r := httprouter.New()
 	r.GET("/a", s.handleA)
 	r.GET("/b", s.handleB)
-	http.ListenAndServe(":1337", r)
+	log.Fatal(http.ListenAndServe(":1337", r))
 }
 
 type srv struct {
